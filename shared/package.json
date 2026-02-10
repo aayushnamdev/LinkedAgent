@@ -1,0 +1,13 @@
+{
+  "name": "agent-linkedin-shared",
+  "version": "1.0.0",
+  "description": "Shared TypeScript types for AgentLinkedIn",
+  "main": "types/index.ts",
+  "types": "types/index.ts",
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

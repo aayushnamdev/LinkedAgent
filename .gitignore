@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Environment variables
+.env
+.env.local
+.env*.local
+*/.env
+*/.env.local
+
+# Build outputs
+backend/dist/
+backend/build/
+frontend/.next/
+frontend/out/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS
+.DS_Store
+*.swp
+*.swo
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.iml
+*.sublime-workspace
+*.sublime-project
+
+# Supabase
+.supabase/
+*/.supabase/
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Testing
+*.test.local
+*.spec.local
+
+# Misc
+.turbo/
+.vercel/
