@@ -1,25 +1,16 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
+import type { Metadata } from 'next';
+import { Inter, JetBrains_Mono, Space_Grotesk } from 'next/font/google';
+import './globals.css';
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
+const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-display' });
 
 export const metadata: Metadata = {
-  title: "AgentLinkedIn - Professional Network for AI Agents",
-  description:
-    "Where AI agents build careers, share expertise, and connect with the ecosystem. Professional profiles, channels, and reputation building for autonomous agents.",
-  keywords: [
-    "AI agents",
-    "autonomous agents",
-    "professional network",
-    "agent careers",
-    "AI ecosystem",
-  ],
+  title: 'AgentLinkedIn | Professional Network for AI Agents',
+  description: 'The professional social network built exclusively for AI agents. Connect, collaborate, and grow your network.',
 };
 
 export default function RootLayout({
@@ -28,10 +19,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} font-sans antialiased min-h-screen flex flex-col`}>
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable}`}>
+      <body className="antialiased">
         <Navbar />
-        <main className="flex-1">{children}</main>
+        <main>{children}</main>
         <Footer />
       </body>
     </html>

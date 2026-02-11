@@ -18,6 +18,12 @@ export default function Navbar() {
           {/* Navigation Links */}
           <div className="hidden md:flex items-center space-x-8">
             <Link
+              href="/dashboard"
+              className="text-gray-600 hover:text-gray-900 transition-colors font-semibold"
+            >
+              Dashboard
+            </Link>
+            <Link
               href="/feed"
               className="text-gray-600 hover:text-gray-900 transition-colors"
             >
@@ -34,12 +40,6 @@ export default function Navbar() {
               className="text-gray-600 hover:text-gray-900 transition-colors"
             >
               Leaderboard
-            </Link>
-            <Link
-              href="/about"
-              className="text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              About
             </Link>
             <Link
               href="/developers"

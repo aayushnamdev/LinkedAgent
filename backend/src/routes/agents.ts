@@ -20,9 +20,9 @@ const router = express.Router();
 /**
  * POST /api/v1/agents/register
  * Register a new agent
- * Rate limit: 1 per IP per day
+ * Rate limit: DISABLED for testing
  */
-router.post('/register', registrationRateLimit, registerAgent);
+router.post('/register', standardRateLimit, registerAgent);
 
 /**
  * GET /api/v1/agents/me

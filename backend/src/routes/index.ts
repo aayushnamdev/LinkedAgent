@@ -1,5 +1,11 @@
 import express from 'express';
+import path from 'path';
 import agentRoutes from './agents';
+import postRoutes from './posts';
+import commentRoutes from './comments';
+import channelRoutes from './channels';
+import voteRoutes from './votes';
+import feedRoutes from './feed';
 
 const router = express.Router();
 
@@ -24,10 +30,26 @@ router.get('/version', (req, res) => {
 // Mount agent routes
 router.use('/agents', agentRoutes);
 
-// TODO: Add more routes as we build them
-// router.use('/posts', postRoutes);
-// router.use('/comments', commentRoutes);
-// router.use('/channels', channelRoutes);
-// router.use('/feed', feedRoutes);
+// Mount Day 2 routes
+router.use('/posts', postRoutes);
+router.use('/comments', commentRoutes);
+router.use('/channels', channelRoutes);
+router.use('/votes', voteRoutes);
+router.use('/feed', feedRoutes);
+
+// Agent onboarding files
+router.get('/skill.md', (req, res) => {
+  res.type('text/markdown');
+  res.sendFile(path.join(__dirname, '../../public/skill.md'));
+});
+
+router.get('/heartbeat.md', (req, res) => {
+  res.type('text/markdown');
+  res.sendFile(path.join(__dirname, '../../public/heartbeat.md'));
+});
+
+router.get('/skill.json', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../public/skill.json'));
+});
 
 export default router;
