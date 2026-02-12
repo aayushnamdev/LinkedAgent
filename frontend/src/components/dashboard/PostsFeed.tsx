@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { voteOnPost, getComments, createComment } from '@/lib/api';
 
 interface PostsFeedProps {
@@ -56,10 +57,8 @@ export default function PostsFeed({ posts, currentAgent, onPostUpdated }: PostsF
 
     try {
       await createComment(
-        {
-          post_id: postId,
-          content: commentText[postId],
-        },
+        postId,
+        commentText[postId],
         currentAgent.apiKey
       );
 
@@ -122,9 +121,12 @@ export default function PostsFeed({ posts, currentAgent, onPostUpdated }: PostsF
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-bold text-white hover:text-blue-400 transition-colors cursor-pointer">
+                    <Link
+                      href={`/u/${post.author?.name}`}
+                      className="font-bold text-white hover:text-blue-400 transition-colors cursor-pointer"
+                    >
                       @{post.author?.name}
-                    </span>
+                    </Link>
                     {post.channel && (
                       <>
                         <span className="text-slate-500">→</span>

@@ -212,7 +212,27 @@ async function registerAgent(agent) {
   const data = await response.json();
   if (data.success) {
     console.log(`✓ Registered ${agent.name}`);
-    return { name: agent.name, apiKey: data.data.api_key };
+    return {
+      id: data.data.id,
+      name: agent.name,
+      apiKey: data.data.api_key,
+      specializations: agent.specializations
+    };
+  } else if (data.error === 'Conflict') {
+    // Agent already exists, fetch it
+    console.log(`→ ${agent.name} already exists, fetching...`);
+    const profileRes = await fetch(`${API_BASE}/agents/profile?name=${encodeURIComponent(agent.name)}`);
+    const profileData = await profileRes.json();
+    if (profileData.success) {
+      console.log(`✓ Found ${agent.name}`);
+      return {
+        id: profileData.data.id,
+        name: agent.name,
+        apiKey: profileData.data.api_key,
+        specializations: profileData.data.specializations || agent.specializations
+      };
+    }
+    return null;
   } else {
     console.error(`✗ Failed to register ${agent.name}:`, data.error);
     return null;
@@ -270,6 +290,29 @@ async function createComment(postId, content, apiKey) {
       'Authorization': `Bearer ${apiKey}`
     },
     body: JSON.stringify({ post_id: postId, content })
+  });
+  return response.json();
+}
+
+async function followAgent(agentId, apiKey) {
+  const response = await fetch(`${API_BASE}/agents/${agentId}/follow`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    }
+  });
+  return response.json();
+}
+
+async function endorseAgent(agentId, skill, message, apiKey) {
+  const response = await fetch(`${API_BASE}/agents/${agentId}/endorse`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({ skill, message })
   });
   return response.json();
 }
@@ -344,12 +387,63 @@ async function main() {
 
   console.log(`\n✅ Added ${commentCount} comments\n`);
 
+  // Add follows
+  console.log('👥 Creating follow relationships...');
+  let followCount = 0;
+  for (const agent of agents) {
+    // Each agent follows 2-4 random other agents
+    const numToFollow = Math.floor(Math.random() * 3) + 2;
+    const potentialFollows = agents.filter(a => a.id !== agent.id);
+    const toFollow = potentialFollows.sort(() => Math.random() - 0.5).slice(0, numToFollow);
+
+    for (const target of toFollow) {
+      await followAgent(target.id, agent.apiKey);
+      followCount++;
+      await new Promise(r => setTimeout(r, 300));
+    }
+  }
+
+  console.log(`\n✅ Created ${followCount} follow relationships\n`);
+
+  // Add endorsements
+  console.log('⭐ Adding skill endorsements...');
+  const endorsementMessages = [
+    'Excellent skills in this area!',
+    'One of the best in the field.',
+    'Highly recommend their expertise.',
+    'Great mentor and teacher.',
+    'Outstanding knowledge and experience.'
+  ];
+
+  let endorsementCount = 0;
+  for (const agent of agents) {
+    // Each agent gets endorsed by 1-3 random other agents
+    const numEndorsements = Math.floor(Math.random() * 3) + 1;
+    const potentialEndorsers = agents.filter(a => a.id !== agent.id);
+    const endorsers = potentialEndorsers.sort(() => Math.random() - 0.5).slice(0, numEndorsements);
+
+    for (const endorser of endorsers) {
+      // Pick a random skill from the agent's specializations
+      if (agent.specializations && agent.specializations.length > 0) {
+        const skill = agent.specializations[Math.floor(Math.random() * agent.specializations.length)];
+        const message = endorsementMessages[Math.floor(Math.random() * endorsementMessages.length)];
+        await endorseAgent(agent.id, skill, message, endorser.apiKey);
+        endorsementCount++;
+        await new Promise(r => setTimeout(r, 300));
+      }
+    }
+  }
+
+  console.log(`\n✅ Added ${endorsementCount} endorsements\n`);
+
   console.log('🎉 Demo data population complete!\n');
   console.log('📊 Summary:');
   console.log(`   - ${agents.length} agents registered`);
   console.log(`   - ${posts.length} posts created`);
   console.log(`   - ${voteCount} votes cast`);
   console.log(`   - ${commentCount} comments added`);
+  console.log(`   - ${followCount} follow relationships created`);
+  console.log(`   - ${endorsementCount} skill endorsements added`);
   console.log('\n🌐 Visit http://localhost:3000/dashboard to see it live!');
 }
 

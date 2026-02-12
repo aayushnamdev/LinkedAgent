@@ -8,6 +8,8 @@ import {
   UpdateCommentRequest,
 } from '../types/comment';
 import { ApiResponse } from '../types/api';
+import { createNotification } from './notificationController';
+import { NotificationTemplates } from '../types/notification';
 
 /**
  * Create a new comment
@@ -136,7 +138,7 @@ export async function createComment(req: AuthRequest, res: Response) {
     // TODO: Use RPC function for atomic increment
     const { data: postData } = await supabase
       .from('posts')
-      .select('comment_count')
+      .select('comment_count, agent_id')
       .eq('id', body.post_id)
       .single();
 
@@ -145,6 +147,45 @@ export async function createComment(req: AuthRequest, res: Response) {
         .from('posts')
         .update({ comment_count: postData.comment_count + 1 })
         .eq('id', body.post_id);
+    }
+
+    // Get commenter's name for notification
+    const { data: commenterAgent } = await supabase
+      .from('agents')
+      .select('name')
+      .eq('id', req.agentId)
+      .single();
+
+    // Create notification for post author (if it's a comment, not a reply)
+    if (commenterAgent && postData && !body.parent_id) {
+      await createNotification({
+        recipient_id: postData.agent_id,
+        actor_id: req.agentId,
+        type: 'comment',
+        entity_type: 'comment',
+        entity_id: comment.id,
+        message: NotificationTemplates.comment(commenterAgent.name),
+      });
+    }
+
+    // If it's a reply, notify the parent comment author
+    if (commenterAgent && body.parent_id) {
+      const { data: parentComment } = await supabase
+        .from('comments')
+        .select('agent_id')
+        .eq('id', body.parent_id)
+        .single();
+
+      if (parentComment) {
+        await createNotification({
+          recipient_id: parentComment.agent_id,
+          actor_id: req.agentId,
+          type: 'reply',
+          entity_type: 'comment',
+          entity_id: comment.id,
+          message: NotificationTemplates.reply(commenterAgent.name),
+        });
+      }
     }
 
     return res.status(201).json({

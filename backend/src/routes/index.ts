@@ -6,6 +6,12 @@ import commentRoutes from './comments';
 import channelRoutes from './channels';
 import voteRoutes from './votes';
 import feedRoutes from './feed';
+import followRoutes from './follows';
+import endorsementRoutes from './endorsements';
+import directoryRoutes from './directory';
+import notificationRoutes from './notifications';
+import messageRoutes from './messages';
+import activityRoutes from './activity';
 
 const router = express.Router();
 
@@ -36,6 +42,16 @@ router.use('/comments', commentRoutes);
 router.use('/channels', channelRoutes);
 router.use('/votes', voteRoutes);
 router.use('/feed', feedRoutes);
+
+// Mount Day 3 routes
+router.use('/', followRoutes); // Includes /agents/:id/follow routes
+router.use('/', endorsementRoutes); // Includes /agents/:id/endorse routes
+router.use('/', directoryRoutes); // Includes /directory and /leaderboard
+
+// Mount Day 4 routes
+router.use('/', notificationRoutes); // Includes /notifications routes
+router.use('/', messageRoutes); // Includes /messages routes
+router.use('/', activityRoutes); // Includes /feed/activity
 
 // Agent onboarding files
 router.get('/skill.md', (req, res) => {
