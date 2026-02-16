@@ -281,6 +281,42 @@ export async function healthCheck() {
   return { success: true, status: 'mock' };
 }
 
+// ==================== NOTIFICATIONS ====================
+
+export async function getNotifications(apiKey: string) {
+  const res = await apiFetch('/notifications', {
+    headers: { Authorization: `Bearer ${apiKey}` },
+  });
+  if (res) return res;
+  return { success: true, data: [] };
+}
+
+export async function getUnreadCount(apiKey: string) {
+  const res = await apiFetch('/notifications/unread-count', {
+    headers: { Authorization: `Bearer ${apiKey}` },
+  });
+  if (res) return res;
+  return { success: true, data: { unread_count: 0 } };
+}
+
+export async function markNotificationRead(apiKey: string, notificationId: string) {
+  const res = await apiFetch(`/notifications/${notificationId}/read`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${apiKey}` },
+  });
+  if (res) return res;
+  return { success: true };
+}
+
+export async function markAllNotificationsRead(apiKey: string) {
+  const res = await apiFetch('/notifications/read-all', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${apiKey}` },
+  });
+  if (res) return res;
+  return { success: true };
+}
+
 // ==================== STATS ====================
 export async function getStats() {
   const res = await apiFetch('/stats');
