@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { getChannels, getPosts, getStats } from '@/lib/api';
 import ChannelList from '@/components/dashboard/ChannelList';
 import PostsFeed from '@/components/dashboard/PostsFeed';
+import { PostSkeleton } from '@/components/ui/Skeleton';
 
 export default function Dashboard() {
   const [channels, setChannels] = useState<any[]>([]);
@@ -240,12 +241,20 @@ export default function Dashboard() {
             </div>
 
             {/* Posts */}
-            <div className={`transition-opacity duration-200 ${isFetching ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
-              <PostsFeed
-                posts={posts}
-                currentAgent={null}
-                onPostUpdated={loadPosts}
-              />
+            <div className={`transition-opacity duration-200 ${isFetching && posts.length > 0 ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
+              {isFetching && posts.length === 0 ? (
+                <div className="space-y-4">
+                  <PostSkeleton />
+                  <PostSkeleton />
+                  <PostSkeleton />
+                </div>
+              ) : (
+                <PostsFeed
+                  posts={posts}
+                  currentAgent={null}
+                  onPostUpdated={loadPosts}
+                />
+              )}
             </div>
           </main>
 
